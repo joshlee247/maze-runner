@@ -1,0 +1,134 @@
+#include <iostream>
+#include <Windows.h>
+#include <fstream>
+#include <string>
+using namespace std;
+
+const mazeSIZE = 2000;
+
+void gotoxy(int column, int line)
+{
+	COORD coord;
+	coord.X = column;
+	coord.Y = line;
+	SetConsoleCursorPosition(
+		GetStdHandle(STD_OUTPUT_HANDLE),
+		coord
+	);
+}
+
+class Stack {
+private:
+	int spaces[mazeSIZE];
+	int top;
+public:
+	Stack() {
+		top = -1;
+	}
+	bool isFull() {
+		return (top == mazeSIZE - 1)
+	}
+	bool isEmpty() {
+		return (top == -1)
+	}
+	void push(int num) {
+		if (!isFull()) {
+			top++;
+			spaces[top] = num;
+		}
+	}
+	int pop() {
+		if (!isEmpty()) {
+			int num;
+			num = spaces[top];
+			top--;
+
+			return num;
+		}
+	}
+};
+class Maze {
+public:
+	//0 = path 1 = wall 2 = landmine 3 = exit 4 = visited
+	int maze[20][100];
+	bool visited[20][100];
+
+	//rows and collumns
+	int xpos, ypos, direciton;
+	Stack myStack;
+
+	Maze() {
+		xpos = 1;
+		ypos = 0;
+		direction = 1;
+		for (int i = 0; i < 30; i++) {
+			for (int j = 0; j < 100; j++) {
+				maze[i][j] = 0;
+			}
+		}
+	}
+	void getMaze() {
+		{
+			ifstream inFile;
+			char c;
+			inFile.open(f);
+			for (int i = 0; i < 30; i++) {
+				for (int j = 0; j < 100; j++) {
+					inFile.get(c);
+					board[i][j] = (int)c - 48;
+					gotoxy(j, i);
+					if (board[i][j] == 1)
+						cout << char(219);
+					else if (board[i][j] == 0)
+						cout << " ";
+					else if (board[i][j] == 3)
+						cout << char(176);
+					else if (board[i][j] == 4)
+						cout << "-";
+				}
+				inFile.get(c);
+				cout << endl;
+			}
+			inFile.close();
+		}
+	}
+	void displayMaze() {
+		gotoxy(j, i);
+		for (int i = 0; i < 30; i++) {
+			for (int j = 0; j < 100; j++)
+				if (maze[i][j] == 0)
+					cout << " ";
+				else if (maze[i][j] == 1)
+					cout << char(219);
+				else if (maze[i][j] == 2)
+					cout << "x";
+				else if (maze[i][j] == 3)
+					cout << char(176);
+				else if (maze[i][j] == 4)
+					cout << ".";
+		}
+	}
+	void moveMouse() {
+		//move mouse
+	}
+	void solveMaze() {
+		//finish maze
+	}
+	int changeDirection() {
+		//change dir
+	}
+
+};
+
+int main() {
+	Maze m;
+	m.getMaze("maze.txt");
+
+	return 0;
+}
+//create stack with locations and current locations
+//create game
+//	check directions
+//	output maze
+//	move forward
+//	solve maze

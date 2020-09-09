@@ -1,0 +1,156 @@
+#include <iostream>
+#include <Windows.h>
+#include <fstream>
+#include <string>
+using namespace std;
+
+void gotoxy(int column, int line)
+{
+	COORD coord;
+	coord.X = column;
+	coord.Y = line;
+	SetConsoleCursorPosition(
+		GetStdHandle(STD_OUTPUT_HANDLE),
+		coord
+	);
+}
+
+struct point {
+public:
+	int x, y;
+};
+
+class stack {
+public:
+	int top = 0;
+	point arr[1000];
+	void push(point p) {
+		arr[top] = p;
+		top++;
+	}
+	point pop() {
+		return arr[--top];
+	}
+	bool isTopOfStack(int x, int y) {
+		return (arr[top].x == x && arr[top].y == y);
+	}
+};
+
+class Game {
+
+		// 0=free 1=wall 2=landmine 3=exit 4=passed
+		int xpos, ypos;
+			/*
+			= {
+			{1,1,1,1,1,1,1,1,1,1},
+			{1,0,0,0,0,0,0,0,0,1},
+			{1,1,1,0,1,1,1,1,0,1},
+			{1,0,1,0,1,1,1,1,0,1},
+			{1,0,1,0,1,0,0,0,0,1},
+			{1,0,1,0,1,1,1,1,1,1},
+			{1,0,1,0,0,0,0,0,0,3},
+			{1,0,1,1,1,1,1,1,1,1},
+			{1,0,0,0,0,0,0,0,0,1},
+			{1,1,1,1,1,1,1,1,1,1}
+			*/
+public:
+		stack mystack;
+		int board[30][100];
+		Game() { xpos = ypos = 1; }
+		void getMaze(string f)
+		{
+			ifstream inFile;
+			char c;
+			inFile.open(f);
+			for (int i = 0; i < 30; i++) {
+				for (int j = 0; j < 100; j++) {
+					inFile.get(c);
+					board[i][j] = (int)c - 48;
+					gotoxy(j, i);
+					if (board[i][j] == 1)
+						cout << char(219);
+					else if (board[i][j] == 0)
+						cout << " ";
+					else if (board[i][j] == 3)
+						cout << char(176);
+					else if (board[i][j] == 4)
+						cout << "-";
+				}
+				inFile.get(c);
+				cout << endl;
+			}
+			inFile.close();
+		}
+		/*void displayboard() {
+			system("cls");
+			for (int i = 0; i < 10; i++)
+			{
+				for (int j = 0; j < 10; j++)
+				{
+					
+				}
+			}
+		}
+		*/
+		void displaypos(bool flag) {
+			gotoxy(xpos, ypos); flag ? cout << "*":cout << " ";
+		}
+		void moveMouse() {
+			// Always try checking the position to the right first
+			if (board[ypos][xpos + 1] == 0 && !mystack.isTopOfStack(xpos,ypos))
+			{
+				board[ypos][xpos - 1] = 4;
+				point p;
+				p.x = xpos;
+				p.y = ypos;
+				mystack.push(p);
+				xpos++;
+				
+			}
+			// position below is free
+			else if (board[ypos + 1][xpos] == 0)
+			{
+				point p;
+				p.x = xpos;
+				p.y = ypos;
+				mystack.push(p);
+				ypos++;
+				board[ypos - 1][xpos] = 4;
+				
+			}
+			// position to the right is a wall and position to the left is free
+			else if (board[ypos][xpos + 1] == 1 && board[ypos][xpos - 1] == 0)
+			{
+				point p;
+				p.x = xpos;
+				p.y = ypos;
+				mystack.push(p);
+				xpos--;
+				board[ypos][xpos + 1] = 4;
+			}
+			// Backtrack
+			else
+			{
+				board[ypos][xpos] = 1;
+				point p;
+				p = mystack.pop();
+				xpos = p.x;
+				ypos = p.y;
+			}
+		}
+		
+};
+
+void main()
+{
+	Game g;
+	g.getMaze("actualmaze.txt");
+	while (1) {
+		// Simulate blinking effect by slowing down animation
+		g.displaypos(true);
+		Sleep(500); 
+		g.displaypos(false);
+		g.moveMouse();
+	}
+	gotoxy(15, 15);
+}

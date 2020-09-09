@@ -1,0 +1,4 @@
+﻿  Source.cpp
+E:\Windows\Visual Studio\Maze\Source.cpp(25,16): warning C4838:  conversion from 'int' to 'SHORT' requires a narrowing conversion
+E:\Windows\Visual Studio\Maze\Source.cpp(25,19): warning C4838:  conversion from 'int' to 'SHORT' requires a narrowing conversion
+  Maze.vcxproj -> E:\Windows\Visual Studio\Maze\x64\Debug\Maze.exe
